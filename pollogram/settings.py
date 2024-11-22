@@ -47,8 +47,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     # apps
-    'posts',
-    'user_profile'
+    # 'posts',
+    'users'
+    # 'user_profiles'
 ]
 
 MIDDLEWARE = [
@@ -134,16 +135,16 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'user.CustomUser'
-
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication'
-    },
+    ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
 }
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ["Bearer"],
@@ -153,5 +154,5 @@ SIMPLE_JWT = {
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Keep default for compatibility
-    'user_profile.backends.EmailAuthenticationBackend',  # Custom backend
+    # 'user_profile.backends.EmailAuthenticationBackend',  # Custom backend
 ]
