@@ -1,11 +1,12 @@
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
-from rest_framework import status
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import (
+    UserSerializer,
     UserSignupSerializer,
     UserPasswordChangeSerializer,
     CustomTokenObtainPairSerializer
@@ -17,16 +18,16 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class SignupView(APIView):
-    def post(self, req):
-        serializer = UserSignupSerializer(data=req.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({'message': 'User created successfully!'})
+class UserDetailApiView(RetrieveAPIView):
+    serializer_class = UserSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 
 class SignupAPIView(CreateAPIView):
-    queryset = User.objects.all()
     serializer_class = UserSignupSerializer
     permission_classes = []
 
@@ -65,3 +66,4 @@ class PasswordChangeView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = []
