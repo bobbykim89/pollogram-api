@@ -3,7 +3,8 @@ from .views import (
     UserDetailApiView,
     PasswordChangeView,
     CustomTokenObtainPairView,
-    SignupAPIView
+    SignupAPIView,
+    PasswordChangeAPIView
 )
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
