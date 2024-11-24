@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate, hashers
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from user_profiles.models import ProfileModel
 
 User = get_user_model()
 
@@ -32,6 +33,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
         validated_data['password'] = hashers.make_password(
             validated_data['password'])
         user = User.objects.create(**validated_data)
+        ProfileModel.objects.create(user=user, username=user.username)
         return user
 
 
