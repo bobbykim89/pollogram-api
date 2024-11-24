@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -56,12 +56,18 @@ class SignupAPIView(CreateAPIView):
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, req):
+    def put(self, req):
         serializer = UserPasswordChangeSerializer(
             data=req.data, context={'request': req})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'message': 'Password updated successfully!'})
+
+
+class PasswordChangeAPIView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = UserPasswordChangeSerializer
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
