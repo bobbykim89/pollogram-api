@@ -27,3 +27,13 @@ class ProfileFollowingModel(models.Model):
     following_user_id = models.ForeignKey(
         ProfileModel, related_name='followers', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user_profile', 'following_user_id'], name='unique_followers')
+        ]
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return f'{self.user_profile} follows {self.following_user_id}'

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserProfileDetailAPIView, CurrentUserProfileAPIView, UserProfileListAPIView, CurrentUserUpdateProfilePictureAPIView, UserProfileCreateFollowAPIView
+from .views import UserProfileDetailAPIView, CurrentUserProfileAPIView, UserProfileListAPIView, CurrentUserUpdateProfilePictureAPIView, UserProfileCreateFollowAPIView, UserProfileDestroyFollowAPIView
 
 urlpatterns = [
     path('', view=UserProfileListAPIView.as_view(),
@@ -10,5 +10,7 @@ urlpatterns = [
          view=CurrentUserUpdateProfilePictureAPIView.as_view(), name='update-profile-image'),
     path('<int:pk>/', view=UserProfileDetailAPIView.as_view(), name='profile-detail'),
     path('<int:pk>/follow/', view=UserProfileCreateFollowAPIView.as_view(),
-         name='follow-profile')
+         name='follow-profile'),
+    path('<int:pk>/unfollow/',
+         view=UserProfileDestroyFollowAPIView.as_view(), name='unfollow-profile')
 ]
