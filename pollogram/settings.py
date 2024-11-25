@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import cloudinary.uploader
 from dotenv import load_dotenv
 from os import environ
 import datetime
+import cloudinary
 
 load_dotenv()
 
@@ -156,3 +158,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Keep default for compatibility
     # 'user_profile.backends.EmailAuthenticationBackend',  # Custom backend
 ]
+
+cloudinary.config(cloud_name=environ.get('CLOUDINARY_CLOUD_NAME'),
+                  api_key=environ.get('CLOUDINARY_API_KEY'),
+                  api_secret=environ.get('CLOUDINARY_API_SECRET')
+                  )
