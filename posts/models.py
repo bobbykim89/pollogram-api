@@ -21,7 +21,7 @@ class PostModel(models.Model):
 
 class PostLikeModel(models.Model):
     user_profile = models.ForeignKey(
-        ProfileModel, related_name='likes', on_delete=models.CASCADE)
+        ProfileModel, related_name='liked_users', on_delete=models.CASCADE)
     liked_post = models.ForeignKey(
         PostModel, related_name='liked_post', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
