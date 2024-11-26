@@ -1,7 +1,8 @@
 from rest_framework.generics import (
-    ListCreateAPIView, RetrieveAPIView, DestroyAPIView, CreateAPIView)
+    ListCreateAPIView, DestroyAPIView, CreateAPIView, RetrieveDestroyAPIView)
 from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import NotFound
 from .models import PostModel, PostLikeModel
 from .serializers import PostSerializer, PostLikeSerializer
 from .permissions import IsAuthorOrAdmin
@@ -29,3 +30,49 @@ class PostListCreateAPIView(ListCreateAPIView):
         content = serializer.validated_data.get('content') or None
         serializer.save(user=current_user_profile, title=title,
                         image_id=image_id, content=content)
+
+
+class PostDetailDeleteAPIView(RetrieveDestroyAPIView):
+    serializer_class = PostSerializer
+    queryset = PostModel.objects.all()
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthorOrAdmin]
+    lookup_field = 'pk'
+
+    def perform_destroy(self, instance):
+        uploader.destroy(instance.image_id)
+        return super().perform_destroy(instance)
+
+
+class PostLikeCreateAPIView(CreateAPIView):
+    serializer_class = PostLikeSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthorOrAdmin]
+    queryset = PostLikeModel.objects.all()
+
+    def perform_create(self, serializer):
+        current_user = self.request.user
+        current_user_profile = ProfileModel.objects.get(user=current_user)
+        target_post = PostModel.objects.get(id=self.kwargs['pk'])
+        if target_post:
+            serializer.save(user_profile=current_user_profile,
+                            liked_post=target_post)
+        return super().perform_create(serializer)
+
+
+class PostUnlikeDestroyAPIView(DestroyAPIView):
+    serializer_class = PostLikeSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthorOrAdmin]
+    queryset = PostLikeModel.objects.all()
+
+    def get_object(self):
+        current_user = self.request.user
+        current_user_profile = ProfileModel.objects.get(user=current_user)
+        target_post = PostModel.objects.get(id=self.kwargs['pk'])
+        if not target_post:
+            raise NotFound('Post not found.')
+        try:
+            return self.queryset.get(user_profile=current_user_profile, liked_post=target_post)
+        except PostLikeModel.DoesNotExist:
+            raise NotFound("You haven't like this post")
