@@ -1,14 +1,19 @@
 from rest_framework.generics import (
-    ListCreateAPIView, DestroyAPIView, CreateAPIView, RetrieveDestroyAPIView)
+    ListCreateAPIView,
+    DestroyAPIView,
+    CreateAPIView,
+    RetrieveDestroyAPIView
+)
 from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, APIException
+from django.core.files.uploadedfile import TemporaryUploadedFile
 from .models import PostModel, PostLikeModel
 from .serializers import PostSerializer, PostLikeSerializer
 from .permissions import IsAuthorOrAdmin
+from .composables import validate_extension
 from user_profiles.models import ProfileModel
 from cloudinary import uploader
-from uuid import uuid4
 
 # Create your views here.
 
@@ -23,13 +28,15 @@ class PostListCreateAPIView(ListCreateAPIView):
     def perform_create(self, serializer):
         current_user = self.request.user
         current_user_profile = ProfileModel.objects.get(user=current_user)
-        file = self.request.data.get('image')
-        upload_data = uploader.upload(file=file, folder='pollogram/post')
-        image_id: str = upload_data['public_id']
-        title = str(uuid4())
         content = serializer.validated_data.get('content') or None
-        serializer.save(user=current_user_profile, title=title,
-                        image_id=image_id, content=content)
+        file: TemporaryUploadedFile = self.request.data.get('image')
+        if validate_extension(file.name):
+            upload_data = uploader.upload(file=file, folder='pollogram/post')
+            image_id: str = upload_data['public_id']
+            serializer.save(user=current_user_profile,
+                            image_id=image_id, content=content)
+        else:
+            raise APIException('Unsupported file type.')
 
 
 class PostDetailDeleteAPIView(RetrieveDestroyAPIView):
@@ -75,4 +82,4 @@ class PostUnlikeDestroyAPIView(DestroyAPIView):
         try:
             return self.queryset.get(user_profile=current_user_profile, liked_post=target_post)
         except PostLikeModel.DoesNotExist:
-            raise NotFound("You haven't like this post")
+            raise NotFound("You haven't liked this post.")

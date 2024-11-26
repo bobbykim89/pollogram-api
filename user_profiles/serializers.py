@@ -27,6 +27,15 @@ class ProfileSerializer(serializers.ModelSerializer):
         return LikedPostSerializer(liked_posts, many=True).data
 
 
+class ProfileSerializerMinimal(serializers.ModelSerializer):
+    username = serializers.CharField(required=False)
+
+    class Meta:
+        model = ProfileModel
+        fields = ['id', 'user', 'username',
+                  'profile_picture', 'created_at', 'updated_at']
+
+
 class ProfileFollowingSerializer(serializers.ModelSerializer):
     user_profile = serializers.CharField(read_only=True)
     following_user_id = serializers.CharField(read_only=True)
