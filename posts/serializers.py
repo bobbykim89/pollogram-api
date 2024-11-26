@@ -1,21 +1,28 @@
 from rest_framework import serializers
 from .models import PostLikeModel, PostModel
-from user_profiles.serializers import ProfileSerializer
+from user_profiles.serializers import ProfileSerializerMinimal
 
 
 class PostSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(read_only=True)
-    user = ProfileSerializer(read_only=True)
+    user = ProfileSerializerMinimal(read_only=True)
     liked_users = serializers.SerializerMethodField()
 
     class Meta:
         model = PostModel
-        fields = ['id', 'user', 'title', 'content',
+        fields = ['id', 'user', 'content',
                   'image_id', 'liked_users', 'created_at', 'updated_at']
 
     def get_liked_users(self, obj):
         liked_users = PostLikeModel.objects.filter(liked_post=obj)
         return PostLikedUserSerializer(liked_users, many=True).data
+
+
+class PostSerializerMinimal(serializers.ModelSerializer):
+    user = ProfileSerializerMinimal(read_only=True)
+
+    class Meta:
+        model = PostModel
+        fields = ['id', 'user', 'image_id', 'created_at']
 
 
 class PostLikeSerializer(serializers.ModelSerializer):

@@ -8,7 +8,6 @@ from user_profiles.models import ProfileModel
 class PostModel(models.Model):
     user = models.ForeignKey(
         ProfileModel, on_delete=models.CASCADE, related_name='posts')
-    title = models.CharField(max_length=100)
     content = models.TextField(blank=True, null=True)
     image_id = models.CharField(
         max_length=255, blank=True, null=True)  # Can store image URLs or paths
@@ -16,7 +15,7 @@ class PostModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return self.title
+        return self.content
 
 
 class PostLikeModel(models.Model):

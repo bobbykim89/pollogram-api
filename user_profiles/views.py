@@ -1,3 +1,4 @@
+import cloudinary.uploader
 from rest_framework.generics import (
     RetrieveAPIView,
     RetrieveUpdateAPIView,
@@ -8,10 +9,12 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, APIException
+from django.core.files.uploadedfile import TemporaryUploadedFile
 from .serializers import ProfileSerializer, ProfileFollowingSerializer
 from .models import ProfileModel, ProfileFollowingModel
 from .permissions import IsAuthorOrAdmin
+from posts.composables import validate_extension
 import cloudinary
 
 # Create your views here.
@@ -44,13 +47,18 @@ class CurrentUserUpdateProfilePictureAPIView(UpdateAPIView):
             return current_user_profile
 
     def perform_update(self, serializer):
-        file = self.request.data.get('image')
-        upload_data = cloudinary.uploader.upload(
-            file=file, folder='pollogram/profile')
-        image_id: str = upload_data['public_id']
-        obj = serializer.instance
-        obj.profile_picture = image_id
-        serializer.save()
+        file: TemporaryUploadedFile = self.request.data.get('image')
+        if validate_extension(file.name):
+            obj = serializer.instance
+            if obj.profile_picture is not None:
+                cloudinary.uploader.destroy(obj.profile_picture)
+            upload_data = cloudinary.uploader.upload(
+                file=file, folder='pollogram/profile')
+            image_id: str = upload_data['public_id']
+            obj.profile_picture = image_id
+            serializer.save()
+        else:
+            raise APIException('Unsupported file type.')
 
 
 class UserProfileListAPIView(ListAPIView):
