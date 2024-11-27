@@ -64,7 +64,7 @@ class PostLikeCreateAPIView(CreateAPIView):
         if target_post:
             serializer.save(user_profile=current_user_profile,
                             liked_post=target_post)
-        return super().perform_create(serializer)
+        # return super().perform_create(serializer)
 
 
 class PostUnlikeDestroyAPIView(DestroyAPIView):
