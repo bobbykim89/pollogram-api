@@ -4,14 +4,15 @@ from user_profiles.serializers import ProfileSerializerMinimal
 from posts.serializers import PostSerializerMinimal
 
 
-class CommentSerializer(serializers.Serializer):
+class CommentSerializer(serializers.ModelSerializer):
     user = ProfileSerializerMinimal(read_only=True)
-    post = PostSerializerMinimal(read_only=True)
+    # post = PostSerializerMinimal(read_only=True)
     liked_users = serializers.SerializerMethodField()
 
     class Meta:
         model = CommentModel
-        fields = ['id', 'user', 'text', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'post', 'text',
+                  'liked_users', 'created_at']
 
     def get_liked_users(self, obj):
         liked_users = CommentLikeModel.objects.filter(liked_comment=obj)
