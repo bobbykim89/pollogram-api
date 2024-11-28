@@ -6,7 +6,7 @@ from .models import CustomUser
 
 class CustomUserAdmin(admin.ModelAdmin):
     list_filter = ('email', 'username')
-    list_display = ('email', 'username')
+    list_display = ('email', 'username', 'is_active', 'is_staff')
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
