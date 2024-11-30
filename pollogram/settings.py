@@ -89,11 +89,22 @@ WSGI_APPLICATION = 'pollogram.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+SQLITE_DB_CONFIG = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
+}
+
+POSTGRES_DB_CONFIG = {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': environ.get('DB_NAME', 'pollogram'),
+    'USER': environ.get('DB_USERNAME', 'postgres'),
+    'PASSWORD': environ.get('DB_PASSWORD', '123'),
+    'HOST': environ.get('DB_HOST', 'localhost'),
+    'PORT': environ.get('DB_PORT', '5434')
+}
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': SQLITE_DB_CONFIG
 }
 
 
