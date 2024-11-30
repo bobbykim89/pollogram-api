@@ -83,7 +83,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pollogram.wsgi.application'
+WSGI_APPLICATION = 'pollogram.wsgi.app'
 
 
 # Database
@@ -94,19 +94,35 @@ SQLITE_DB_CONFIG = {
     'NAME': BASE_DIR / 'db.sqlite3',
 }
 
-POSTGRES_DB_CONFIG = {
+POSTGRES_TEST_CONFIG = {
     'ENGINE': 'django.db.backends.postgresql',
-    'NAME': environ.get('DB_NAME', 'pollogram'),
-    'USER': environ.get('DB_USERNAME', 'postgres'),
-    'PASSWORD': environ.get('DB_PASSWORD', '123'),
-    'HOST': environ.get('DB_HOST', 'localhost'),
-    'PORT': environ.get('DB_PORT', '5434')
+    'NAME': 'pollogram',
+    'USER': 'postgres',
+    'PASSWORD': '123',
+    'HOST': 'localhost',
+    'PORT': 5434,
 }
+
+POSTGRES_NEON_CONFIG = {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': environ.get('DB_NAME'),
+    'USER': environ.get('DB_USERNAME'),
+    'PASSWORD': environ.get('DB_PASSWORD'),
+    'HOST': environ.get('DB_HOST'),
+    'PORT': environ.get('DB_PORT'),
+    'OPTIONS': {
+        'sslmode': 'require'
+    },
+    'DISABLE_SERVER_SIDE_CURSORS': True
+}
+
+
+POSTGRES_DB_CONFIG = POSTGRES_NEON_CONFIG if environ.get(
+    'DEBUG_MODE', '') == 'False' else POSTGRES_TEST_CONFIG
 
 DATABASES = {
-    'default': SQLITE_DB_CONFIG
+    'default': POSTGRES_DB_CONFIG
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -175,3 +191,6 @@ cloudinary.config(cloud_name=environ.get('CLOUDINARY_CLOUD_NAME'),
                   api_key=environ.get('CLOUDINARY_API_KEY'),
                   api_secret=environ.get('CLOUDINARY_API_SECRET')
                   )
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
