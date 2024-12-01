@@ -121,7 +121,7 @@ POSTGRES_DB_CONFIG = POSTGRES_NEON_CONFIG if environ.get(
     'DEBUG_MODE', '') == 'False' else POSTGRES_TEST_CONFIG
 
 DATABASES = {
-    'default': POSTGRES_DB_CONFIG
+    'default': POSTGRES_NEON_CONFIG
 }
 
 # Password validation
