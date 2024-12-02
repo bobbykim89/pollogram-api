@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'pollogram.urls'
@@ -191,6 +192,7 @@ cloudinary.config(cloud_name=environ.get('CLOUDINARY_CLOUD_NAME'),
                   api_secret=environ.get('CLOUDINARY_API_SECRET')
                   )
 
-STATIC_ROOT = path.join(BASE_DIR, 'staticfiles_build', 'static')
-STATIC_URL = '/staticfiles/'
+STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
