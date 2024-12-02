@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import cloudinary.uploader
 from dotenv import load_dotenv
-from os import environ
+from os import environ, path
 import datetime
 import cloudinary
 
@@ -192,5 +192,6 @@ cloudinary.config(cloud_name=environ.get('CLOUDINARY_CLOUD_NAME'),
                   api_secret=environ.get('CLOUDINARY_API_SECRET')
                   )
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/staticfiles/'
+STATIC_ROOT = path.join(BASE_DIR, 'staticfiles_build', 'static')
+STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
