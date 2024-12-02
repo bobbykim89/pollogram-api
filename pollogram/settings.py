@@ -184,7 +184,6 @@ SIMPLE_JWT = {
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Keep default for compatibility
-    # 'user_profile.backends.EmailAuthenticationBackend',  # Custom backend
 ]
 
 cloudinary.config(cloud_name=environ.get('CLOUDINARY_CLOUD_NAME'),
@@ -192,6 +191,6 @@ cloudinary.config(cloud_name=environ.get('CLOUDINARY_CLOUD_NAME'),
                   api_secret=environ.get('CLOUDINARY_API_SECRET')
                   )
 
-STATIC_URL = '/staticfiles/'
 STATIC_ROOT = path.join(BASE_DIR, 'staticfiles_build', 'static')
+STATIC_URL = '/staticfiles/'
 STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
