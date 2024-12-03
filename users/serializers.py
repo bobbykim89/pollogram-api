@@ -59,12 +59,17 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, str]:
         username_or_email = attrs.get('username')
         password = attrs.get('password')
-
         user = authenticate(request=self.context.get(
             'request'), username=username_or_email, password=password)
-        if not user:
-            user = authenticate(request=self.context.get(
-                'request'), email=username_or_email, password=password)
+        if user is None:
+            user = authenticate(
+                request=self.context.get('request'),
+                username=User.objects.filter(email=username_or_email).values_list(
+                    'username', flat=True).first(),
+                password=password
+            )
+            if user:
+                attrs['username'] = user.username
         if not user:
             raise serializers.ValidationError('Invalid Credentials')
 

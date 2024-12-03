@@ -194,5 +194,5 @@ cloudinary.config(cloud_name=environ.get('CLOUDINARY_CLOUD_NAME'),
 
 STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
+# STATICFILES_DIRS = [path.join(BASE_DIR, 'static')]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
