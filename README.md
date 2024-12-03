@@ -25,8 +25,8 @@ Pollogram-API is a backend API for an Instagram clone project, designed using Dj
 1. Clone the Repository
 
 ```bash
-git clone <repository_url>
-cd Pollogram-API
+git clone https://github.com/bobbykim89/pollogram-api.git
+cd pollogram-api
 ```
 
 2. Set Up Virtual Environment
