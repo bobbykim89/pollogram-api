@@ -39,7 +39,6 @@ source .venv/bin/activate # On Windows: .venv\Scripts\activate
 3. Install Dependencies
 
 ```bash
-Copy code
 pip install -r requirements.txt
 ```
 
@@ -49,14 +48,12 @@ pip install -r requirements.txt
 5. Run Migrations
 
 ```bash
-Copy code
 python manage.py migrate
 ```
 
 6. Start the Server
 
 ```bash
-Copy code
 python manage.py runserver
 ```
 
