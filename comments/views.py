@@ -3,21 +3,18 @@ from rest_framework.generics import (
     DestroyAPIView,
     CreateAPIView,
 )
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import NotFound
-from .permissions import IsAuthorOrAdmin
 from .serializers import CommentSerializer, CommentLikeSerializer
 from .models import CommentModel, CommentLikeModel
 from user_profiles.models import ProfileModel
 from posts.models import PostModel
+from common.mixins import JWTAuthAndPermissionsMixin
 
 # Create your views here.
 
 
-class CommentListCreatePerPostAPIView(ListCreateAPIView):
+class CommentListCreatePerPostAPIView(JWTAuthAndPermissionsMixin, ListCreateAPIView):
     serializer_class = CommentSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
 
     def get_queryset(self):
         post_id = self.kwargs['post_id']
@@ -34,18 +31,14 @@ class CommentListCreatePerPostAPIView(ListCreateAPIView):
         serializer.save(user=current_user_profile, post=post, text=text)
 
 
-class CommentDeleteAPIView(DestroyAPIView):
+class CommentDeleteAPIView(JWTAuthAndPermissionsMixin, DestroyAPIView):
     serializer_class = CommentSerializer
     queryset = CommentModel.objects.all()
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
     lookup_field = 'pk'
 
 
-class CommentLikeCreateAPIView(CreateAPIView):
+class CommentLikeCreateAPIView(JWTAuthAndPermissionsMixin, CreateAPIView):
     serializer_class = CommentLikeSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
     queryset = CommentLikeModel.objects.all()
 
     def perform_create(self, serializer):
@@ -57,10 +50,8 @@ class CommentLikeCreateAPIView(CreateAPIView):
                             liked_comment=target_comment)
 
 
-class CommentUnlikeDestroyAPIView(DestroyAPIView):
+class CommentUnlikeDestroyAPIView(JWTAuthAndPermissionsMixin, DestroyAPIView):
     serializer_class = CommentLikeSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
     queryset = CommentLikeModel.objects.all()
 
     def get_object(self):

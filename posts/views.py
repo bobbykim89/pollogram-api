@@ -5,24 +5,21 @@ from rest_framework.generics import (
     RetrieveDestroyAPIView
 )
 from rest_framework.parsers import MultiPartParser, JSONParser
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import NotFound, APIException
 from django.core.files.uploadedfile import TemporaryUploadedFile
 from .models import PostModel, PostLikeModel
 from .serializers import PostSerializer, PostLikeSerializer
-from .permissions import IsAuthorOrAdmin
 from .composables import validate_extension
 from user_profiles.models import ProfileModel
 from cloudinary import uploader
+from common.mixins import JWTAuthAndPermissionsMixin
 
 # Create your views here.
 
 
-class PostListCreateAPIView(ListCreateAPIView):
+class PostListCreateAPIView(JWTAuthAndPermissionsMixin, ListCreateAPIView):
     serializer_class = PostSerializer
     queryset = PostModel.objects.all()
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
     parser_classes = [MultiPartParser, JSONParser]
 
     def perform_create(self, serializer):
@@ -39,11 +36,9 @@ class PostListCreateAPIView(ListCreateAPIView):
             raise APIException('Unsupported file type.')
 
 
-class PostDetailDeleteAPIView(RetrieveDestroyAPIView):
+class PostDetailDeleteAPIView(JWTAuthAndPermissionsMixin, RetrieveDestroyAPIView):
     serializer_class = PostSerializer
     queryset = PostModel.objects.all()
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
     lookup_field = 'pk'
 
     def perform_destroy(self, instance):
@@ -51,10 +46,8 @@ class PostDetailDeleteAPIView(RetrieveDestroyAPIView):
         return super().perform_destroy(instance)
 
 
-class PostLikeCreateAPIView(CreateAPIView):
+class PostLikeCreateAPIView(JWTAuthAndPermissionsMixin, CreateAPIView):
     serializer_class = PostLikeSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
     queryset = PostLikeModel.objects.all()
 
     def perform_create(self, serializer):
@@ -64,13 +57,10 @@ class PostLikeCreateAPIView(CreateAPIView):
         if target_post:
             serializer.save(user_profile=current_user_profile,
                             liked_post=target_post)
-        # return super().perform_create(serializer)
 
 
-class PostUnlikeDestroyAPIView(DestroyAPIView):
+class PostUnlikeDestroyAPIView(JWTAuthAndPermissionsMixin, DestroyAPIView):
     serializer_class = PostLikeSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
     queryset = PostLikeModel.objects.all()
 
     def get_object(self):

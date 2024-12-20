@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from user_profiles.models import ProfileModel
 
 
 class IsAuthorOrAuthReadOnly(permissions.BasePermission):
@@ -24,7 +25,9 @@ class IsAuthorOrAuthReadOnly(permissions.BasePermission):
             return True
 
         # The author of the post can perform all actions
-        if obj.user == request.user:
+        current_user = request.user
+        current_user_profile = ProfileModel.objects.get(user=current_user)
+        if obj.user == current_user_profile:
             return True
 
         # Authenticated users can only read the object
