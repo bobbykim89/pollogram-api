@@ -20,6 +20,46 @@ Pollogram-API is a backend API for an Instagram clone project, designed using Dj
 | /api/posts/    | CRUD operations for posts.      |
 | /api/comments/ | Manage comments on posts.       |
 
+### /api/user/
+
+| Endpoint          | Description          |
+| ----------------- | -------------------- |
+| /                 | Get user info        |
+| /signup/          | Signup new user      |
+| /login/           | Login user           |
+| /refresh/         | Refresh auth token   |
+| /verify/          | Verify auth token    |
+| /change-password/ | Change user password |
+
+### /api/profile/
+
+| Endpoint                     | Description                                        |
+| ---------------------------- | -------------------------------------------------- |
+| /                            | Get Profiles list                                  |
+| /current-user/               | Get current user profile detailed view             |
+| /current-user/profile-image/ | Update current user's profile image                |
+| /:pk/                        | Get user profile detailed view based on profile id |
+| /:pk/follow/                 | Follow user profile with profile id                |
+| /:pk/unfollow/               | Unfollow user profile with profile id              |
+
+### /api/posts/
+
+| Endpoint     | Description                                             |
+| ------------ | ------------------------------------------------------- |
+| /            | GET: retrieve posts list, POST: Create new post         |
+| /:pk/        | GET: get detailed post by id, DELETE: delete post by id |
+| /:pk/like/   | Like post by id                                         |
+| /:pk/unlike/ | Unlike post by id                                       |
+
+### /api/comments/
+
+| Endpoint     | Description                                                                 |
+| ------------ | --------------------------------------------------------------------------- |
+| /:post_id/   | GET: retrieve comments list by post id, POST: create new comment by post id |
+| /:pk/delete/ | Delete comment by id                                                        |
+| /:pk/like/   | Like comment by id                                                          |
+| /:pk/unlike/ | Unlike comment by id                                                        |
+
 ## Installation
 
 1. Clone the Repository
@@ -62,7 +102,6 @@ python manage.py runserver
 Here’s the list of main dependencies used in the project:
 
 ```makefile
-Copy code
 asgiref==3.8.1
 certifi==2024.8.30
 cloudinary==1.41.0

@@ -6,25 +6,23 @@ from rest_framework.generics import (
     CreateAPIView,
     DestroyAPIView
 )
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import NotFound, APIException
 from django.core.files.uploadedfile import TemporaryUploadedFile
 from .serializers import ProfileSerializer, ProfileFollowingSerializer
 from .models import ProfileModel, ProfileFollowingModel
-from .permissions import IsAuthorOrAdmin
 from posts.composables import validate_extension
+from .mixins import UserProfileJWTAuthAndPermissionsMixin, UserProfileJWTAuthOnlyPermissionsMixin
 import cloudinary
 
 # Create your views here.
 
 
-class CurrentUserProfileAPIView(RetrieveUpdateAPIView):
+class CurrentUserProfileAPIView(UserProfileJWTAuthAndPermissionsMixin, RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     queryset = ProfileModel.objects.all()
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
 
     def get_object(self):
         current_user = self.request.user
@@ -33,11 +31,9 @@ class CurrentUserProfileAPIView(RetrieveUpdateAPIView):
             return current_user_profile
 
 
-class CurrentUserUpdateProfilePictureAPIView(UpdateAPIView):
+class CurrentUserUpdateProfilePictureAPIView(UserProfileJWTAuthAndPermissionsMixin, UpdateAPIView):
     serializer_class = ProfileSerializer
     queryset = ProfileModel.objects.all()
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthorOrAdmin]
     parser_classes = [MultiPartParser, JSONParser]
 
     def get_object(self):
@@ -61,11 +57,9 @@ class CurrentUserUpdateProfilePictureAPIView(UpdateAPIView):
             raise APIException('Unsupported file type.')
 
 
-class UserProfileListAPIView(ListAPIView):
+class UserProfileListAPIView(UserProfileJWTAuthOnlyPermissionsMixin, ListAPIView):
     serializer_class = ProfileSerializer
     queryset = ProfileModel.objects.all()
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
 
 class UserProfileDetailAPIView(RetrieveAPIView):
@@ -76,10 +70,8 @@ class UserProfileDetailAPIView(RetrieveAPIView):
     lookup_field = 'pk'
 
 
-class UserProfileCreateFollowAPIView(CreateAPIView):
+class UserProfileCreateFollowAPIView(UserProfileJWTAuthOnlyPermissionsMixin, CreateAPIView):
     serializer_class = ProfileFollowingSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
     queryset = ProfileFollowingModel.objects.all()
 
     def perform_create(self, serializer):
@@ -91,10 +83,8 @@ class UserProfileCreateFollowAPIView(CreateAPIView):
                             following_user_id=target_user_profile)
 
 
-class UserProfileDestroyFollowAPIView(DestroyAPIView):
+class UserProfileDestroyFollowAPIView(UserProfileJWTAuthOnlyPermissionsMixin, DestroyAPIView):
     serializer_class = ProfileFollowingSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
     queryset = ProfileFollowingModel.objects.all()
 
     def get_object(self):

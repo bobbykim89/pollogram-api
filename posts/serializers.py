@@ -6,6 +6,8 @@ from user_profiles.serializers import ProfileSerializerMinimal
 class PostSerializer(serializers.ModelSerializer):
     user = ProfileSerializerMinimal(read_only=True)
     liked_users = serializers.SerializerMethodField()
+    image_id = serializers.CharField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = PostModel
